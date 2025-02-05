@@ -1,7 +1,7 @@
 function header() {
     let header = document.createElement("header");
     header.className = "header";
-
+    //nose
     let contenedorImagen = document.createElement("div");
     contenedorImagen.className = "header-image";
 
