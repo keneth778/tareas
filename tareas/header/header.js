@@ -1,19 +1,9 @@
-/*header.js*/
-function header() {
-    let header = document.createElement("header");
-    header.className = "header";
-
-    let contenedorImagen = document.createElement("div");
-    contenedorImagen.className = "header-image";
-
-
-    let contenedorTexto = document.createElement("div");
-    contenedorTexto.className = "header-text";
-    contenedorTexto.textContent = "Personal";
-
-    header.appendChild(contenedorTexto);
-
+// tareas/header/header.js
+export function encabezado() {
+    const header = document.createElement("header");
+    header.className = "header"; // Clase en inglés
+    header.innerHTML = `
+        <h1 class="header-text">Task Manager</h1>
+    `;
     return header;
 }
-
-export { header };

@@ -1,0 +1,20 @@
+/*config.ccs*/
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+}
+
+/* Contenedor principal (#root) */
+#root {
+    max-width: 375px; /* Ancho máximo para pantallas pequeñas */
+    margin: 0 auto; /* Centra el contenedor horizontalmente */
+    padding: 1rem;
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    box-sizing: border-box; /* Incluye el padding en el tamaño total */
+    display: flex;
+    flex-direction: column;
+}

@@ -1,12 +1,11 @@
-.header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px 20px;
+/*header.css*/
+header {
+    padding: 1rem;
+    text-align: left;
 }
 
-.header-text {
+header h1 {
+    margin: 0;
     font-size: 24px;
-    font-weight: bold;
-    color: black;
+    color: #1A1A1A;
 }
