@@ -1,36 +1,19 @@
-import { encabezado } from "./tareas/header/header.js"; // Importar el encabezado
-import { cargarTareas } from "./tareas/tareas/tareas.js"; // Importar cargarTareas
-import { cargarFormulario } from "./tareas/formulario/funcionesFormulario.js"; // Importar cargarFormulario
+import { cargarHeader } from './tareas/header/header.js';
+import { cargarTareas } from './tareas/tareas/tareas.js';
+import { cargarFormulario } from './tareas/formulario/funcionesFormulario.js';
 
 function cargarDOM() {
-    // Obtener el contenedor principal
-    const raiz = document.getElementById("root");
+    const root = document.getElementById('root');
 
-    // Crear un contenedor para organizar los elementos
-    const contenedor = document.createElement("div");
-    contenedor.className = "contenedor";
+    // Cargar el encabezado
+    root.appendChild(cargarHeader());
 
-    // Crear y agregar el encabezado
-    const divEncabezado = document.createElement("div");
-    divEncabezado.className = "div-encabezado";
-    divEncabezado.appendChild(encabezado()); // Agregar el encabezado
-    contenedor.appendChild(divEncabezado);
+    // Cargar las tareas
+    root.appendChild(cargarTareas());
 
-    // Crear y agregar el contenedor de tareas
-    const divTareas = document.createElement("div");
-    divTareas.className = "div-tareas";
-    divTareas.appendChild(cargarTareas()); // Agregar las tareas
-    contenedor.appendChild(divTareas);
-
-    // Crear y agregar el footer
-    const divFooter = document.createElement("div");
-    divFooter.className = "div-footer";
-    cargarFormulario(); // Configurar el footer
-    contenedor.appendChild(divFooter);
-
-    // Agregar el contenedor al DOM
-    raiz.appendChild(contenedor);
+    // Cargar el formulario
+    cargarFormulario();
 }
 
-// Llamar a la función para cargar el DOM
-cargarDOM();
+// Llamar a la función para cargar el DOM cuando la página se cargue
+document.addEventListener('DOMContentLoaded', cargarDOM);
