@@ -1,62 +1,45 @@
-// tareas/tareas/tareas.js
+import { cargarFormularioAgregarTarea } from './funcionesTareas.js';
 
-// Array para almacenar las tareas (si es necesario)
-export const tareas = [];
-
-// Función para consultar las tareas desde el backend
-export function consultarTareasBackEnd() {
-    return fetch('http://localhost:3000/usuarios') // Ajusta la URL según tu backend
-        .then(response => response.json())
-        .catch(error => {
-            console.error('Error obteniendo las tareas:', error);
-            return []; // Devuelve un array vacío en caso de error
-        });
-}
-
-// Función para cargar y renderizar las tareas
-export function cargarTareas() {
+export function cargarTareas(usuario_id) {
     const tareasContainer = document.createElement('section');
     tareasContainer.className = 'tasks-container';
 
-    // Consultar tareas desde el backend
-    consultarTareasBackEnd().then(tareas => {
-        tareas.forEach(tarea => {
-            tareasContainer.appendChild(cargarTarea(tarea));
+    // Consultar las tareas del usuario desde el backend
+    fetch(`http://localhost:3000/tareas/${usuario_id}`)
+        .then(response => response.json())
+        .then(tareas => {
+            console.log('Tareas recibidas:', tareas); // Verifica las tareas
+            if (tareas.length === 0) {
+                tareasContainer.innerHTML = '<p class="no-tasks">No hay tareas para mostrar.</p>';
+            } else {
+                tareas.forEach(tarea => {
+                    tareasContainer.appendChild(crearTarjetaTarea(tarea));
+                });
+            }
+        })
+        .catch(error => {
+            console.error('Error al obtener las tareas: ', error);
+            tareasContainer.innerHTML = '<p class="error">Hubo un error al cargar las tareas.</p>';
         });
-    });
+
+    // Crear el footer dinámicamente
+    const footer = document.createElement('footer');
+    footer.id = 'footer'; // Asignar un ID al footer
+    footer.appendChild(cargarFormularioAgregarTarea(usuario_id)); // Agregar el formulario al footer
+
+    // Agregar el footer al body
+    document.body.appendChild(footer);
 
     return tareasContainer;
 }
 
 // Función para crear una tarjeta de tarea
-export function cargarTarea(tarea) {
+function crearTarjetaTarea(tarea) {
     const taskCard = document.createElement('div');
     taskCard.className = 'task-card';
     taskCard.innerHTML = `
         <div class="checkbox"></div>
-        <p class="task-text">${tarea.nombre}</p> <!-- Ajusta según la estructura de tus datos -->
+        <p class="task-text">${tarea.nombre}</p>
     `;
-
-    // Configurar interacciones de la tarea
-    const checkbox = taskCard.querySelector('.checkbox');
-    checkbox.addEventListener('click', () => {
-        if (checkbox.classList.contains('checked')) {
-            desmarcarTarea(taskCard);
-        } else {
-            marcarTarea(taskCard);
-        }
-    });
-
     return taskCard;
-}
-
-// Funciones para marcar/desmarcar tareas
-function marcarTarea(taskCard) {
-    const checkbox = taskCard.querySelector('.checkbox');
-    checkbox.classList.add('checked');
-}
-
-function desmarcarTarea(taskCard) {
-    const checkbox = taskCard.querySelector('.checkbox');
-    checkbox.classList.remove('checked');
 }

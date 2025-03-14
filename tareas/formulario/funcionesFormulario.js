@@ -1,63 +1,73 @@
 // tareas/formulario/funcionesFormulario.js
+import { cargarHeader } from '../header/header.js'; // Importación añadida
+import { cargarTareas } from '../tareas/tareas.js'; // Importación añadida
+import { cargarFormularioRegistro } from './registro.js';
 
-// Función para agregar una tarea
-export function agregarTarea(nuevaTarea) {
-    // Datos que se enviarán al servidor
-    const datosTarea = {
-        nombre_tarea: nuevaTarea,
-        estado: false // Estado inicial de la tarea
-    };
+export function cargarFormularioLogin() {
+    const loginForm = document.createElement('form');
+    loginForm.className = 'login-form';
 
-    // Hacer una solicitud POST al servidor
-    fetch('http://localhost:3000/agregar', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json', // Indicar que el cuerpo es JSON
-        },
-        body: JSON.stringify(datosTarea), // Convertir los datos a JSON
-    })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error(`Error ${response.status}: ${response.statusText}`);
-        }
-        return response.json(); // Convertir la respuesta a JSON
-    })
-    .then(data => {
-        console.log('Tarea agregada correctamente:', data);
-        alert('Tarea agregada correctamente.'); // Mostrar mensaje de éxito
-    })
-    .catch(error => {
-        console.error('Error al agregar la tarea:', error);
-        alert('Hubo un error al agregar la tarea. Inténtalo de nuevo.'); // Mostrar mensaje de error
+    const correoInput = document.createElement('input');
+    correoInput.type = 'email';
+    correoInput.placeholder = 'Correo electrónico';
+    correoInput.required = true;
+
+    const contraseñaInput = document.createElement('input');
+    contraseñaInput.type = 'password';
+    contraseñaInput.placeholder = 'Contraseña';
+    contraseñaInput.required = true;
+
+    const submitButton = document.createElement('button');
+    submitButton.type = 'submit';
+    submitButton.textContent = 'Iniciar sesión';
+
+    const registroButton = document.createElement('button');
+    registroButton.type = 'button';
+    registroButton.textContent = 'Registrarse';
+    registroButton.addEventListener('click', () => {
+        const root = document.getElementById('root');
+        root.innerHTML = ''; // Limpiar el contenido actual
+        root.appendChild(cargarFormularioRegistro());
     });
+
+    loginForm.appendChild(correoInput);
+    loginForm.appendChild(contraseñaInput);
+    loginForm.appendChild(submitButton);
+    loginForm.appendChild(registroButton);
+
+    loginForm.addEventListener('submit', (event) => {
+        event.preventDefault();
+        const correo = correoInput.value.trim();
+        const contraseña = contraseñaInput.value.trim();
+        iniciarSesion(correo, contraseña);
+    });
+
+    return loginForm;
 }
 
-// Función para cargar el formulario
-export function cargarFormulario() {
-    const footer = document.createElement('footer');
-    footer.className = 'footer';
-
-    const taskInput = document.createElement('input');
-    taskInput.type = 'text';
-    taskInput.className = 'task-input';
-    taskInput.placeholder = 'Escribe una tarea...';
-
-    const addButton = document.createElement('button');
-    addButton.className = 'add-button';
-    addButton.textContent = 'Agregar';
-
-    addButton.addEventListener('click', () => {
-        const nuevaTarea = taskInput.value.trim();
-        if (nuevaTarea) {
-            agregarTarea(nuevaTarea); // Llamar a la función actualizada
-            taskInput.value = ''; // Limpiar el input
+// Función para iniciar sesión
+function iniciarSesion(correo, contraseña) {
+    fetch('http://localhost:3000/login', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ correo, contraseña }),
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.usuario_id) {
+            localStorage.setItem('usuario_id', data.usuario_id); // Guardar el ID del usuario
+            const root = document.getElementById('root');
+            root.innerHTML = ''; // Limpiar el contenido actual
+            root.appendChild(cargarHeader()); // Cargar el header
+            root.appendChild(cargarTareas(data.usuario_id)); // Cargar las tareas
         } else {
-            alert('Por favor, escribe una tarea.'); // Validación básica
+            alert('Credenciales incorrectas');
         }
+    })
+    .catch(error => {
+        console.error('Error al iniciar sesión: ', error);
+        alert('Hubo un error al iniciar sesión');
     });
-
-    footer.appendChild(taskInput);
-    footer.appendChild(addButton);
-
-    document.body.appendChild(footer);
 }
