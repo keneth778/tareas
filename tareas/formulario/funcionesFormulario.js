@@ -1,39 +1,73 @@
-import { tareas } from "../data.js"; // Importar el array de tareas desde data.js
-import { cargarTareas } from "../tareas/itemTarea.js"; // Importar la función cargarTareas
+// tareas/formulario/funcionesFormulario.js
+import { cargarHeader } from '../header/header.js'; // Importación añadida
+import { cargarTareas } from '../tareas/tareas.js'; // Importación añadida
+import { cargarFormularioRegistro } from './registro.js';
 
-// Función para agregar una tarea
-export function agregarTarea(nuevaTarea) {
-    tareas.push(nuevaTarea); // Agregar la nueva tarea al array
-    const tasksContainer = document.querySelector(".tasks-container");
-    tasksContainer.innerHTML = ""; // Limpiar el contenedor de tareas
-    tasksContainer.appendChild(cargarTareas()); // Volver a cargar las tareas
-}
+export function cargarFormularioLogin() {
+    const loginForm = document.createElement('form');
+    loginForm.className = 'login-form';
 
-// Función para cargar el formulario
-export function cargarFormulario() {
-    const footer = document.createElement("footer");
-    footer.className = "footer"; // Clase en inglés
+    const correoInput = document.createElement('input');
+    correoInput.type = 'email';
+    correoInput.placeholder = 'Correo electrónico';
+    correoInput.required = true;
 
-    const taskInput = document.createElement("input");
-    taskInput.type = "text";
-    taskInput.className = "task-input"; // Clase en inglés
-    taskInput.placeholder = "Escribe una tarea...";
+    const contraseñaInput = document.createElement('input');
+    contraseñaInput.type = 'password';
+    contraseñaInput.placeholder = 'Contraseña';
+    contraseñaInput.required = true;
 
-    const addButton = document.createElement("button");
-    addButton.className = "add-button"; // Clase en inglés
-    addButton.textContent = "Agregar";
+    const submitButton = document.createElement('button');
+    submitButton.type = 'submit';
+    submitButton.textContent = 'Iniciar sesión';
 
-    // Evento para agregar una tarea
-    addButton.addEventListener("click", () => {
-        const nuevaTarea = taskInput.value.trim();
-        if (nuevaTarea) {
-            agregarTarea(nuevaTarea);
-            taskInput.value = ""; // Limpiar el input
-        }
+    const registroButton = document.createElement('button');
+    registroButton.type = 'button';
+    registroButton.textContent = 'Registrarse';
+    registroButton.addEventListener('click', () => {
+        const root = document.getElementById('root');
+        root.innerHTML = ''; // Limpiar el contenido actual
+        root.appendChild(cargarFormularioRegistro());
     });
 
-    footer.appendChild(taskInput);
-    footer.appendChild(addButton);
+    loginForm.appendChild(correoInput);
+    loginForm.appendChild(contraseñaInput);
+    loginForm.appendChild(submitButton);
+    loginForm.appendChild(registroButton);
 
-    document.body.appendChild(footer);
+    loginForm.addEventListener('submit', (event) => {
+        event.preventDefault();
+        const correo = correoInput.value.trim();
+        const contraseña = contraseñaInput.value.trim();
+        iniciarSesion(correo, contraseña);
+    });
+
+    return loginForm;
+}
+
+// Función para iniciar sesión
+function iniciarSesion(correo, contraseña) {
+    fetch('http://localhost:3000/login', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ correo, contraseña }),
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.usuario_id) {
+            localStorage.setItem('usuario_id', data.usuario_id); // Guardar el ID del usuario
+            const root = document.getElementById('root');
+            root.innerHTML = ''; // Limpiar el contenido actual
+            root.appendChild(cargarHeader()); // Cargar el header
+            root.appendChild(cargarTareas(data.usuario_id)); // Cargar las tareas
+        } else {
+            alert('Credenciales incorrectas');
+        }
+    })
+    .catch(error => {
+        console.error('Error al iniciar sesión: ', error);
+        alert('Hubo un error al iniciar sesión');
+    });
 }
